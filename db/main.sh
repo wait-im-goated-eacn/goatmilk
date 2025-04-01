@@ -120,14 +120,14 @@ sudo chattr +i /bin/echo
 sudo chattr +i /bin/ln
 
 # ssh Lang Change
-sudo echo "AceptEnv LANG LC_*" >> /etc/ssh/sshd_config
-sudo touch /etc/profile.d/ssh_locale.sh
-echo -e 'if [[ -n "$SSH_CONNECTION" ]]; then\n\texport LANG="de_DE.UTF-8"\n\texport LANGUAGE="de_DE.UTF-8"\n\texport LC_ALL="de_DE.UTF-8"\nfi' >> /etc/profile.d/ssh_locale.sh
-sudo apt update
-sudo apt install -y language-pack-de
-sudo locale-gen de_DE.UTF-8
-sudo update-locale LANG=de_DE.UTF-8
-sudo systemctl restart sshd
+# sudo echo "AceptEnv LANG LC_*" >> /etc/ssh/sshd_config
+# sudo touch /etc/profile.d/ssh_locale.sh
+# echo -e 'if [[ -n "$SSH_CONNECTION" ]]; then\n\texport LANG="de_DE.UTF-8"\n\texport LANGUAGE="de_DE.UTF-8"\n\texport LC_ALL="de_DE.UTF-8"\nfi' >> /etc/profile.d/ssh_locale.sh
+# sudo apt update
+# sudo apt install -y language-pack-de
+# sudo locale-gen de_DE.UTF-8
+# sudo update-locale LANG=de_DE.UTF-8
+# sudo systemctl restart sshd
 
 
 
