@@ -24,12 +24,12 @@ sudo tee "$SSHD_CONFIG" > /dev/null <<EOF
 # semanage port -a -t ssh_port_t -p tcp #PORTNUMBER
 
 Port 22
-#AddressFamily any
+#AddressFamily inet
 #ListenAddress 0.0.0.0
 #ListenAddress ::
 
 HostKey /etc/ssh/ssh_host_rsa_key
-HostKey /etc/ssh/ssh_host_ecdsa_key
+# HostKey /etc/ssh/ssh_host_ecdsa_key
 # In FIPS mode Ed25519 keys are not supported, please comment out the next line
 HostKey /etc/ssh/ssh_host_ed25519_key
 
@@ -112,8 +112,8 @@ GSSAPICleanupCredentials no
 # problems.
 UsePAM yes
 
-#AllowAgentForwarding yes
-#AllowTcpForwarding yes
+AllowAgentForwarding no
+AllowTcpForwarding no
 #GatewayPorts no
 X11Forwarding no
 #X11DisplayOffset 10
@@ -151,6 +151,7 @@ Subsystem	sftp	/usr/libexec/openssh/sftp-server
 # Example of overriding settings on a per-user basis
 Match User root
     PasswordAuthentication yes
+
 #	X11Forwarding no
 #	AllowTcpForwarding no
 #	PermitTTY no
