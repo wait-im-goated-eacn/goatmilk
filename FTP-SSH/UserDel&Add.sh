@@ -8,20 +8,24 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-# Define the password hash for all users.
+# Define the password hash for all users. 
+# REPLACE IF NEEDED
 PASSWORD_HASH='$6$KHk2hJlrIZKWxWA9$z2OrpVg05wxoUp/BL12VY9rvxvgyZhta.qKf9SwckeNMcW4QvCJACSA4QyBwy88UpPAGDrskbu7rb7sh8fbnM1'
 
-# Define the SSH public key to be installed for each user.
+# Define the SSH public key to be installed for each user. 
+# REPLACE IF NEEDED
 SSH_KEY='ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCcM4aDj8Y4COv+f8bd2WsrIynlbRGgDj2+q9aBeW1Umj5euxnO1vWsjfkpKnyE/ORsI6gkkME9ojAzNAPquWMh2YG+n11FB1iZl2S6yuZB7dkVQZSKpVYwRvZv2RnYDQdcVnX9oWMiGrBWEAi4jxcYykz8nunaO2SxjEwzuKdW8lnnh2BvOO9RkzmSXIIdPYgSf8bFFC7XFMfRrlMXlsxbG3u/NaFjirfvcXKexz06L6qYUzob8IBPsKGaRjO+vEdg6B4lH1lMk1JQ4GtGOJH6zePfB6Gf7rp31261VRfkpbpaDAznTzh7bgpq78E7SenatNbezLDaGq3Zra3j53u7XaSVipkW0S3YcXczhte2J9kvo6u6s094vrcQfB9YigH4KhXpCErFk08NkYAEJDdqFqXIjvzsro+2/EW1KKB9aNPSSM9EZzhYc+cBAl4+ohmEPej1m15vcpw3k+kpo1NC2rwEXIFxmvTme1A2oIZZBpgzUqfmvSPwLXF0EyfN9Lk= SCORING KEY DO NOT REMOVE'
 
 # Delete all users with UID >= 1000 (adjust the filter as needed).
+# Can use pkill -9 -u {user}
 echo "Deleting all login-capable users..."
 for user in $(awk -F: '($3>=1000)&&($1!="nobody"){print $1}' /etc/passwd); do
     echo "Deleting user: $user"
     userdel -r "$user"
 done
 
-# List of users to re-add.
+# List of users to re-add. 
+# REPLACE IF NEEDED
 users=(
     camille_jenatzy
     gaston_chasseloup
@@ -62,6 +66,7 @@ for username in "${users[@]}"; do
     echo "$username:$PASSWORD_HASH" | chpasswd -e
     
     # Configure SSH: create .ssh directory, set permissions, and add the authorized key.
+    # TODO: Talk to Adit about a set authorized key for every user
     SSH_DIR="/home/$username/.ssh"
     mkdir -p "$SSH_DIR"
     chmod 700 "$SSH_DIR"
