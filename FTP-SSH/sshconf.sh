@@ -59,7 +59,7 @@ PubkeyAuthentication yes
 
 # The default is to check both .ssh/authorized_keys and .ssh/authorized_keys2
 # but this is overridden so installations will only check .ssh/authorized_keys
-AuthorizedKeysFile    .ssh/authorized_keys
+AuthorizedKeysFile    /etc/ssh/authorized_keys
 
 #AuthorizedPrincipalsFile none
 
@@ -151,9 +151,12 @@ Subsystem	sftp	/usr/libexec/openssh/sftp-server
 # Example of overriding settings on a per-user basis
 Match User root
     PasswordAuthentication yes
+    PubkeyAuthentication no
 
 #	X11Forwarding no
 #	AllowTcpForwarding no
 #	PermitTTY no
 #	ForceCommand cvs server
 EOF
+
+sudo systemctl reload sshd

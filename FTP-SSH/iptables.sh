@@ -11,6 +11,7 @@ iptables -A INPUT -i lo -j ACCEPT
 iptables -A INPUT -p tcp --sport 22 -j ACCEPT
 iptables -A INPUT -p tcp --sport 21 -j ACCEPT
 iptables -A INPUT -p tcp --sport 20 -j ACCEPT
+iptables -A INPUT -p tcp --sport 10000:10100 -j ACCEPT
 
 #Finish Input & Block
 sudo iptables -A INPUT -j DROP
