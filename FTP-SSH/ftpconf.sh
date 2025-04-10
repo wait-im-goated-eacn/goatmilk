@@ -1,29 +1,35 @@
 #!/bin/bash
 # Ensure the script is run as root or with sudo privileges
 
-# Check and create /etc/vsftpd directory if it doesn't exist
-if [ ! -d /etc/vsftpd ]; then
-    mkdir -p /etc/vsftpd
-    echo "Created /etc/vsftpd directory."
+# Configuration variables - change these as needed
+CONFIG_BACKUP="/etc/vsftpd.conf.bak"
+VSFTPD_DIR="/etc/vsftpd"
+USER_LIST_FILE="$VSFTPD_DIR/user_list"
+LOCAL_ROOT="/lol/bruh"
+CONFIG_FILE="$VSFTPD_DIR/vsftpd.conf"
+
+# Create necessary directories if they don't exist
+if [ ! -d "$VSFTPD_DIR" ]; then
+    mkdir -p "$VSFTPD_DIR"
+    echo "Created directory: $VSFTPD_DIR"
 fi
 
-# Check and create the /lol/bruh directory as specified in local_root
-if [ ! -d /lol/bruh ]; then
-    mkdir -p /lol/bruh
-    echo "Created /lol/bruh directory."
+if [ ! -d "$LOCAL_ROOT" ]; then
+    mkdir -p "$LOCAL_ROOT"
+    echo "Created directory: $LOCAL_ROOT"
 fi
 
-# Backup the current vsftpd configuration file
-if [ -f /etc/vsftpd.conf ]; then
-    cp /etc/vsftpd.conf /etc/vsftpd.conf.bak
-    echo "Backup saved to /etc/vsftpd.conf.bak"
+# Backup the vsftpd configuration file if it exists
+if [ -f "$CONFIG_FILE" ]; then
+    cp "$CONFIG_FILE" "$CONFIG_BACKUP"
+    echo "Backup created at $CONFIG_BACKUP"
 else
-    echo "Warning: /etc/vsftpd.conf not found, creating a new configuration file."
-    touch /etc/vsftpd.conf
+    echo "Warning: $CONFIG_FILE not found. A new configuration file will be created."
+    touch "$CONFIG_FILE"
 fi
 
-# Append custom configuration options to /etc/vsftpd.conf
-cat <<'EOF' >> /etc/vsftpd.conf
+# Append custom configuration options to the configuration file
+cat <<'EOF' >> "$CONFIG_FILE"
 
 # --- Custom FTP configuration options ---
 anonymous_enable=NO
@@ -46,10 +52,10 @@ userlist_file=/etc/vsftpd/user_list
 # --- End of Custom Options ---
 EOF
 
-echo "vsftpd.conf has been updated with custom options."
+echo "Updated configuration file at $CONFIG_FILE"
 
-# Create (or overwrite) the user_list file with the specified usernames
-cat <<'EOF' > /etc/vsftpd/user_list
+# Create (or overwrite) the user list file with the specified usernames
+cat <<'EOF' > "$USER_LIST_FILE"
 camille_jenatzy
 gaston_chasseloup
 leon_serpollet
@@ -79,5 +85,5 @@ jessi_combs
 andy_green
 EOF
 
-echo "User list created at /etc/vsftpd/user_list"
+echo "User list created at $USER_LIST_FILE"
 echo "Script complete!"
