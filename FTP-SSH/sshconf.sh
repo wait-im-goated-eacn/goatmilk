@@ -1,12 +1,12 @@
-#!/bin/bash
+##!/bin/bash
 
-# Define the SSH config file path
-SSHD_CONFIG="/etc/ssh/sshd_config"
+## Define the SSH config file path
+#SSHD_CONFIG="/etc/ssh/sshd_config"
 
 
-# Overwrite the config file with the new configuration
-echo "Replacing sshd_config..."
-sudo tee "$SSHD_CONFIG" > /dev/null <<EOF
+## Overwrite the config file with the new configuration
+#echo "Replacing sshd_config..."
+#sudo tee "$SSHD_CONFIG" > /dev/null <<EOF
 #       $OpenBSD: sshd_config,v 1.103 2018/04/09 20:41:22 tj Exp $
 
 # This is the sshd server system-wide configuration file. See
@@ -157,6 +157,6 @@ Match User root
 #	AllowTcpForwarding no
 #	PermitTTY no
 #	ForceCommand cvs server
-EOF
+#EOF
 
-sudo systemctl reload sshd
+#sudo systemctl reload sshd

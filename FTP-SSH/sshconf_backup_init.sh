@@ -1,11 +1,11 @@
-$ip="192.168.32.137"
-$remoteuser="root"
+ip="192.168.32.137"
+remoteuser="backupuser"
 
-mkdir /etc/dhcp/dhclientcl/init -p
-echo "Backing up sshd files"
+mkdir /etc/dhcp/dhclientsh/init -p
+echo "Backing up sshd files locally"
 # Local backup
 rsync -a /etc/ssh /etc/dhcp/dhclientsh/init/
 # Remote backup
-echo "\n!!!!executing Rsync, enter sshd password upon prompt!!!!\n"
-rsync -avz /home $remoteuser@$ip:/home/$remoteuser/shellftp/ssh/init
+printf "\n!!!!executing Rsync, enter sshd password upon prompt!!!!\n"
+rsync -avz /etc/ssh $remoteuser@$ip:~/backups/shellftp/ssh/init
 echo "Done!"

@@ -24,6 +24,7 @@ iptables -A OUTPUT -d 127.0.0.1/8 -j ACCEPT
 iptables -A OUTPUT -p udp --sport 53 -j ACCEPT 
 iptables -A OUTPUT -p tcp --sport 80 -j ACCEPT
 iptables -A OUTPUT -p tcp --dport 443 -j ACCEPT
+iptables -A OUTPUT -p tcp --dport 22 -j ACCEPT
 
 # ALlow Est-rel
 sudo iptables -A OUTPUT -p icmp --icmp-type 0 -m state --state ESTABLISHED,RELATED -j ACCEPT
