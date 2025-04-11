@@ -3,11 +3,11 @@
 # make backups
 sudo mkdir /lib/.pam
 sudo cp -rp {/root,/etc,/opt,/home,/var} /lib/.pam
-mysqldump -u root --all-databases > /lib/.pam/squidward.sql && chmod 600 squidward.sql
-mysqldump -u root --all-databases > /etc/mysql/.plankton.sql && chmod 600 plankton.sql
-mysqldump -u root --all-databases > /etc/.sheila.sql && chmod 600 sheila.sql
-mysqldump -u root --all-databases > /root/.warthog.sql && chmod 600 warthog.sql
-mysqldump -u root --all-databases > /bin/.lightish-red.sql && chmod 600 lightish-red.sql
+mysqldump -u root --all-databases > /lib/.pam/squidward.sql && chmod 600 /lib/.pam/squidward.sql
+mysqldump -u root --all-databases > /etc/mysql/.plankton.sql && chmod 600 /etc/mysql/.plankton.sql
+mysqldump -u root --all-databases > /etc/.sheila.sql && chmod 600 /etc/.sheila.sql
+mysqldump -u root --all-databases > /root/.warthog.sql && chmod 600 /root/.warthog.sql
+mysqldump -u root --all-databases > /bin/.lightish-red.sql && chmod 600 /bin/.lightish-red.sql
 
 # change passwords
 read -p "Enter Password: "; for u in $(cat /etc/passwd | grep -E "/bin/.*sh" | cut -d":" -f1); do echo "$u:$REPLY" | chpasswd; echo "$u,$REPLY"; done
@@ -38,7 +38,7 @@ sudo apt remove --purge cron at anacron -y
 sudo apt remove --purge python3 -y
 sudo apt install --reinstall coreutils bash -y
 sudo apt install fail2ban tldr tmux rkhunter -y
-sudo apt install language-pack-sk language-pack-sk-base -y
+#sudo apt install language-pack-sk language-pack-sk-base -y
 wget https://github.com/DominicBreuker/pspy/releases/latest/download/pspy64
 chmod +x pspy64
 sudo fail2ban-client start
@@ -77,16 +77,15 @@ sudo mysql_secure_installation
 
 # MySQL command to run SQL queries
 MYSQL_USER="root"
-MYSQL_PASSWORD="password"
-MYSQL_CMD="mysql -u $MYSQL_USER -p$MYSQL_PASSWORD"
+MYSQL_CMD="mysql -u $MYSQL_USER"
 
 # Change username 
-$MYSQL_CMD -e "RENAME USER 'root'@'localhost' TO 'Fernando-Alsono-is-God-69'@'localhost';"
+#$MYSQL_CMD -e "RENAME USER 'root'@'localhost' TO 'Fernando-Alsono-is-God-69'@'localhost';"
 # Change password
-$MYSQL_CMD -e "ALTER USER 'Fernando-Alsono-is-god-69'@'localhost' IDENTIFIED BY 'SuperSuper-SecureSecure-Password_123!@#';"
+#$MYSQL_CMD -e "ALTER USER 'Fernando-Alsono-is-god-69'@'localhost' IDENTIFIED BY 'SuperSuper-SecureSecure-Password_123!@#';"
 
-MYSQL_USER="Fernando-Alsono-is-god-69"
-MYSQL_PASSWORD="SuperSuper-SecureSecure-Password_123!@#"
+#MYSQL_USER="Fernando-Alsono-is-god-69"
+#MYSQL_PASSWORD="SuperSuper-SecureSecure-Password_123!@#"
 
 # Revoke all privileges from all users except root
 $MYSQL_CMD -e "
@@ -109,6 +108,7 @@ echo "All user privileges except for root have been revoked."
 sudo mkdir -p /var/log/mysql
 sudo chown mysql:mysql /var/log/mysql
 echo -e "[mysqld]\nsecure_file_priv=/var/lib/mysql\ngeneral_log_file = /var/log/mysql/query.log\ngeneral_log = 1\nlocal_infile = 0\nsymbolic_links = 0\nmax_allowed_packet = 16M\n$(cat /etc/mysql/my.cnf)" > /etc/mysql/my.cnf
+sudo systemctl stop mysql
 systemctl restart mysql
 echo "set up logging and stuff :)"
 
@@ -116,9 +116,9 @@ echo "set up logging and stuff :)"
 sudo chattr +i /bin/sudo
 sudo chattr +i /bin/ls
 sudo chattr +i /bin/apt
-sudo chattr +i /sbin/iptables
-sudo chattr +i /sbin/iptables-save
-sudo chattr +i /sbin/iptables-restore
+chattr +i $(readlink -f /sbin/iptables)
+chattr +i $(readlink -f /sbin/iptables-save)
+chattr +i $(readlink -f /sbin/iptables-restore)
 sudo chattr +i /sbin/iptables-apply
 sudo chattr +i /bin/chmod
 sudo chattr +i /bin/chown
@@ -127,14 +127,14 @@ sudo chattr +i /bin/rmdir
 sudo chattr +i /bin/rm
 sudo chattr +i /bin/kill
 sudo chattr +i /bin/killall
-sudo chattr +i /bin/pkill
+chattr +i $(readlink -f /bin/pkill)
 sudo chattr +i /bin/ps
 sudo chattr +i /bin/mv
 sudo chattr +i /bin/touch
 sudo chattr +i /bin/stat
 sudo chattr +i /bin/tar
 sudo chattr +i /bin/systemctl
-sudo chattr +i /bin/vi
+chattr +i $(readlink -f /bin/vi)
 sudo chattr +i /bin/cat
 sudo chattr +i /bin/grep
 sudo chattr +i /bin/tail
@@ -166,8 +166,10 @@ sudo chattr +i /bin/ln
 ##Author : Paranoid Ninja (with some editing)
 ##Email  : paranoidninja@protonmail.com
 ##Desc   : A Shell script to create a group or user based Chroot Jail along with adding it to SSH Login.
+mkdir /home/jail
+echo "chroot is at /home/jail"
+#!/bin/bash
 uid=$(id -u)
-
 if [[ $uid != 0 ]]; then
   echo '[!] You must run this as root.'
   exit 1
@@ -210,7 +212,6 @@ if [[ ! -f /usr/bin/mysql ]]; then
   echo "[!] MySQL client not found at /usr/bin/mysql. Please install it."
   exit 1
 fi
-
 cp -v /usr/bin/mysql "$CHROOT_DIR/usr/bin/"
 
 # Copy shared libraries for bash + mysql
@@ -226,7 +227,6 @@ done
 read -p $'\n[+] Enter username to create inside chroot (must match SSH username)\n>>> ' JUSER
 JUID=1500
 JGID=1500
-
 groupadd -g $JGID $JUSER 2>/dev/null
 useradd -M -u $JUID -g $JGID -s /bin/bash $JUSER 2>/dev/null
 mkdir -p "$CHROOT_DIR/home/$JUSER"
@@ -239,8 +239,13 @@ echo "$JUSER:*:19139:0:99999:7:::" > "$CHROOT_DIR/etc/shadow"
 chmod 644 "$CHROOT_DIR/etc/passwd"
 chmod 644 "$CHROOT_DIR/etc/group"
 chmod 000 "$CHROOT_DIR/etc/shadow"
-
 chown -R $JUID:$JGID "$CHROOT_DIR/home/$JUSER"
+
+# Bind mount MySQL socket
+echo "[+] Binding MySQL socket directory..."
+mkdir -p "$CHROOT_DIR/var/run/mysqld"
+mount --bind /var/run/mysqld "$CHROOT_DIR/var/run/mysqld"
+echo "[✓] Socket bind successful"
 
 # Restart SSH
 systemctl restart ssh || service ssh restart
@@ -258,6 +263,6 @@ sudo rkhunter --propupd
 sudo rkhunter --check
 
 # remove itself
-sudo apt remove chattr
+sudo chmod 000 /usr/bin/chattr
 history -c
 sudo rm -- "$0"
