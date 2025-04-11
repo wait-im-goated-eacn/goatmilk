@@ -1,7 +1,7 @@
 #!/bin/bash
 # backup.sh - Script to back up files and iptables rules
 
-# Configuration variables for easy change
+# Files to backup vars
 SSHD_CONF="/etc/sshd_conf"
 VSFTPD_CONF="/etc/vsftpd.conf"
 VSFTPD_USERLIST="/etc/vsftpd.userlist"
