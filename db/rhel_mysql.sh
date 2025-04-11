@@ -74,16 +74,15 @@ sudo mysql_secure_installation
 
 # MySQL command to run SQL queries
 MYSQL_USER="root"
-MYSQL_PASSWORD="oni"
-MYSQL_CMD="mysql -u $MYSQL_USER -p$MYSQL_PASSWORD"
+MYSQL_CMD="mysql -u $MYSQL_USER "
 
 # Change username 
-$MYSQL_CMD -e "RENAME USER 'root'@'localhost' TO 'Fernando-Alsono-is-God-69'@'localhost';"
+#$MYSQL_CMD -e "RENAME USER 'root'@'localhost' TO 'Fernando-Alsono-is-God-69'@'localhost';"
 # Change password
-$MYSQL_CMD -e "ALTER USER 'Fernando-Alsono-is-god-69'@'localhost' IDENTIFIED BY 'SuperSuper-SecureSecure-Password_123;"
+#$MYSQL_CMD -e "ALTER USER 'Fernando-Alsono-is-god-69'@'localhost' IDENTIFIED BY 'SuperSuper-SecureSecure-Password_123;"
 
-MYSQL_USER="Fernando-Alsono-is-god-69"
-MYSQL_PASSWORD="SuperSuper-SecureSecure-Password_123"
+#MYSQL_USER="Fernando-Alsono-is-god-69"
+$MYSQL_PASSWORD="SuperSuper-SecureSecure-Password_123"
 
 # Revoke all privileges from all users except root
 $MYSQL_CMD -e "
@@ -113,8 +112,8 @@ echo "set up logging and stuff :)"
 # we do a little trolling :)
 sudo chattr +i /bin/sudo
 sudo chattr +i /bin/ls
-sudo chattr +i /bin/dnf
-sudo chattr +i /bin/yum
+sudo chattr +i /usr/bin/dnf
+sudo chattr +i /usr/bin/yum
 sudo chattr +i /sbin/iptables
 sudo chattr +i /sbin/iptables-save
 sudo chattr +i /sbin/iptables-restore
@@ -149,6 +148,7 @@ sudo chattr +i /bin/dig
 sudo chattr +i /bin/echo
 sudo chattr +i /bin/ln
 
+
 # ssh Lang Change
 #sudo echo "AceptEnv LANG LC_*" >> /etc/ssh/sshd_config
 #sudo touch /etc/profile.d/ssh_locale.sh
@@ -159,103 +159,11 @@ sudo chattr +i /bin/ln
 #sudo update-locale LANG=de_DE.UTF-8
 #sudo systemctl restart sshd
 
-
-#chroot
-
-##Author : Paranoid Ninja (with some editing)
-##Email  : paranoidninja@protonmail.com
-##Desc   : A Shell script to create a group or user based Chroot Jail along with adding it to SSH Login.
-uid=$(id -u)
-
-if [[ $uid != 0 ]]; then
-  echo '[!] You must run this as root.'
-  exit 1
-fi
-
-read -p $'\n[+] Enter the Chroot directory [/home/jail]:\n>>> ' CHROOT_DIR
-CHROOT_DIR="${CHROOT_DIR:-/home/jail}"
-
-read -p $'\n[+] Enable Chrooted SSH? (y/n)\n>>> ' ENABLE_SSH
-if [[ "$ENABLE_SSH" == "y" ]]; then
-  read -p $'\n[+] Create Chrooted SSH for?\n1. Single User\n2. Group\n>>> ' CHOICE
-  if [[ "$CHOICE" == "1" ]]; then
-    read -p $'\n[+] Enter the user\'s name\n>>> ' CHROOT_USER
-    echo -e "\nMatch User $CHROOT_USER\nChrootDirectory $CHROOT_DIR\nForceCommand internal-sftp\nAllowTCPForwarding no\n" >> /etc/ssh/sshd_config
-    echo "[+] User $CHROOT_USER added to Chrooted SSH"
-  else
-    read -p $'\n[+] Enter the group name [restricted_group]\n>>> ' groupName
-    groupName="${groupName:-restricted_group}"
-    groupadd "$groupName"
-    echo -e "\nMatch Group $groupName\nChrootDirectory $CHROOT_DIR\nForceCommand internal-sftp\nAllowTCPForwarding no\n" >> /etc/ssh/sshd_config
-    echo "[+] Group $groupName added to Chrooted SSH"
-  fi
-fi
-
-echo -e "\n[+] Creating Chroot Jail in $CHROOT_DIR..."
-mkdir -p "$CHROOT_DIR"{/bin,/lib,/lib64,/usr/bin,/dev,/etc,/home}
-chown root:root "$CHROOT_DIR"
-chmod 755 "$CHROOT_DIR"
-
-# Create required devices
-for dev in null tty zero random; do
-  [[ ! -e "$CHROOT_DIR/dev/$dev" ]] && mknod -m 666 "$CHROOT_DIR/dev/$dev" c $(stat -c "%t %T" /dev/$dev)
-done
-
-# Copy bash
-cp -v /bin/bash "$CHROOT_DIR/bin/"
-
-# Copy mysql client if installed
-if [[ ! -f /usr/bin/mysql ]]; then
-  echo "[!] MySQL client not found at /usr/bin/mysql. Please install it."
-  exit 1
-fi
-
-cp -v /usr/bin/mysql "$CHROOT_DIR/usr/bin/"
-
-# Copy shared libraries for bash + mysql
-for bin in /bin/bash /usr/bin/mysql; do
-  ldd $bin | awk '{if ($3 ~ /^\//) print $3; else if ($1 ~ /^\//) print $1}' | while read lib; do
-    dest="$CHROOT_DIR$(dirname "$lib")"
-    mkdir -p "$dest"
-    cp -v "$lib" "$dest/"
-  done
-done
-
-# Create chroot user
-read -p $'\n[+] Enter username to create inside chroot (must match SSH username)\n>>> ' JUSER
-JUID=1500
-JGID=1500
-
-groupadd -g $JGID $JUSER 2>/dev/null
-useradd -M -u $JUID -g $JGID -s /bin/bash $JUSER 2>/dev/null
-mkdir -p "$CHROOT_DIR/home/$JUSER"
-
-# Add minimal passwd/group/shadow files
-echo "[+] Setting up user $JUSER inside chroot..."
-echo "$JUSER:x:$JUID:$JGID:Chroot User:/home/$JUSER:/bin/bash" > "$CHROOT_DIR/etc/passwd"
-echo "$JUSER:x:$JGID:" > "$CHROOT_DIR/etc/group"
-echo "$JUSER:*:19139:0:99999:7:::" > "$CHROOT_DIR/etc/shadow"
-chmod 644 "$CHROOT_DIR/etc/passwd"
-chmod 644 "$CHROOT_DIR/etc/group"
-chmod 000 "$CHROOT_DIR/etc/shadow"
-
-chown -R $JUID:$JGID "$CHROOT_DIR/home/$JUSER"
-
-# Restart SSH
-systemctl restart ssh || service ssh restart
-
-# Test chroot
-read -p $'\n[+] Do you want to test the chroot now? (y/n)\n>>> ' DO_TEST
-if [[ "$DO_TEST" == "y" ]]; then
-  echo "[+] Launching chroot as $JUSER..."
-  chroot --userspec=$JUID:$JGID "$CHROOT_DIR" /bin/bash
-fi
-
 sudo rkhunter --update
 sudo rkhunter --propupd
 sudo rkhunter --check
 
 # remove itself
-sudo apt remove chattr
+sudo chmod 000 /usr/bin/chattr
 history -c
 sudo rm -- "$0"
