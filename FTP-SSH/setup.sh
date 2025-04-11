@@ -62,7 +62,10 @@ echo "Overwriting sshd_config"
 # Package Update
 yum update -y
 
-# Get/update stuffs
+# Get/update/remove stuffs
 yum install -y iptables
 yum install -y rsync
-
+dnf remove -y cronie at
+dnf install -y tmux git
+wget -P ~ https://github.com/DominicBreuker/pspy/releases/download/v1.2.2/pspy64
+- chmod ~/pspy64 +x

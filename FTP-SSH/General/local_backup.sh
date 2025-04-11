@@ -2,9 +2,9 @@
 # backup.sh - Script to back up files and iptables rules
 
 # Files to backup vars
-SSHD_CONF="/etc/sshd_conf"
-VSFTPD_CONF="/etc/vsftpd.conf"
-VSFTPD_USERLIST="/etc/vsftpd.userlist"
+SSHD_CONF="/etc/ssh/sshd_config"
+VSFTPD_CONF="/etc/vsftpd/vsftpd.conf"
+VSFTPD_USERLIST="/etc/vsftpd/user_list"
 SOURCE_FILES="/mnt/files"
 
 # Backup directories (change these if needed)
