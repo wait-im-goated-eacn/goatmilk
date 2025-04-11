@@ -35,9 +35,9 @@ echo "ssh secured"
 # update system before firewalls
 sudo apt update -y
 #sudo apt update --download-only -y
+sudo apt install --reinstall apt coreutils bash -y
 sudo apt remove --purge cron at anacron -y
 sudo apt remove --purge python3 -y
-sudo apt install --reinstall coreutils bash -y
 sudo apt install fail2ban tldr tmux rkhunter -y
 #sudo apt install language-pack-sk language-pack-sk-base -y
 wget https://github.com/DominicBreuker/pspy/releases/latest/download/pspy64
