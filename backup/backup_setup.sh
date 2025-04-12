@@ -17,7 +17,7 @@ sudo curl -s -o /usr/local/bin/rrsync https://raw.githubusercontent.com/WayneD/r
 sudo chmod +x /usr/local/bin/rrsync
 
 echo "[+] Creating backup folders..."
-dirs=(web dns database shell smb router test)
+dirs=(web dns database shellftp smb router test)
 for dir in "${dirs[@]}"; do
     sudo mkdir -p /home/backup/$dir
     sudo chown backup:backup /home/backup/$dir
