@@ -5,6 +5,7 @@
 SSHD_CONF="/etc/ssh/sshd_config"
 VSFTPD_CONF="/etc/vsftpd/vsftpd.conf"
 VSFTPD_USERLIST="/etc/vsftpd/user_list"
+SMB_CONF="/etc/samba/smb.conf"
 SOURCE_FILES="/mnt/files"
 
 # Backup directories (change these if needed)
@@ -23,7 +24,10 @@ cp "$SOURCE_FILES" "$BACKUP_DIR2/"
 cp "$VSFTPD_CONF" "$BACKUP_DIR1/"
 cp "$VSFTPD_CONF" "$BACKUP_DIR2/"
 cp "$VSFTPD_USERLIST" "$BACKUP_DIR1/"
-cp "$VSFTPD_USERLIST" "$BACKUP_DIR2/"
+
+# SMB CONF BACKUP
+cp "$SMB_CONF" "$BACKUP_DIR2/"
+cp "$SMB_CONF" "$BACKUP_DIR1/"
 
 # Save iptables rules to both directories (using sudo for iptables-save)
 sudo iptables-save > "$BACKUP_DIR1/iptables.rules"
